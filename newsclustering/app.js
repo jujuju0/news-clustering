@@ -8,10 +8,9 @@ var routes = require('./routes');
 var user = require('./routes/user');
 var http = require('http');
 var path = require('path');
-// var $ = require('jQuery');
 
 var app = express();
-var g_rssfeedlist = require("./webcrawler.js")
+var webcrawler = require('./webcrawler.js');
 // all environments
 app.set('port', process.env.PORT || 3000);
 app.set('views', __dirname + '/views');
@@ -34,6 +33,9 @@ if ('development' == app.get('env')) {
 app.get('/', routes.index);
 app.get('/users', user.list);
 app.get('/getfile', routes.getfile);
+
+console.log('getRSS')
+webcrawler.getRSS();
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
