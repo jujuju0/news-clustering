@@ -1,24 +1,18 @@
 /*
-	author : Miae Kim
+	author : Miae Kim ( http://facebook.com/sweet.miae.kim )
 */
 
-//getfile
 var fs = require("fs");
-//getrss
-var FeedParser = require('feedparser');
-var request = require('request');
-//getcontent
-// var Boilerpipe = require('boilerpipe');
-//feedlist
-var RSSFEEDPATH = "./rssfeedlist.json";
-
 module.exports = {
 	getfile : function(filepath){
-		var feedlist = fs.readFileSync(filepath,'utf8');
-		return feedlist;
+		var _file = fs.readFileSync(filepath,'utf8');
+		return _file;
 	},
 	getRSS : function(){
 		var self = this;
+		var FeedParser = require('feedparser');
+		var request = require('request');
+		var RSSFEEDPATH = "./rssfeedlist.json";
 		var feedlist = eval(this.getfile(RSSFEEDPATH));
 
 		if( !Array.isArray(feedlist)) {
@@ -27,10 +21,8 @@ module.exports = {
 		}
 
 		for( i in feedlist) {
-			// var i = 0;
 			var feed = feedlist[i];
 			var data;
-			console.log('===============> %s',feed)
 			request(feed)
 				.on('error', function (error) {
 					console.error(error);
@@ -40,41 +32,68 @@ module.exports = {
 					console.error(error);
 				})
 				.on('meta', function (meta) {
-					console.log('===== %s =====', meta.title);
+					console.log('beg ===== %s =====', meta.title);
 				})
 				.on('article', function (article) {
-					console.log('article: %s', article.title);
-					console.log('author: %s',article.author);
-					console.log('date : %s', article.date);
-					console.log('link: %s', article.link);
-					// console.log('content: %s', self.getContent(article.link) || article.description);
+					self.getContent(article, feed);
 				})
-				.on('readable', function () {
-					var stream = this, item;
-					while (item = stream.read()) {
-						console.log('article', item)
-						console.log('Got article: %s', item.title || item.description );
-						console.log('link %s', item.link)
-					}
-				})
+				// .on('readable', function () {
+				// 	var stream = this, item;
+				// 	while (item = stream.read()) {
+				// 		console.log('>>article', item)
+				// 		console.log('>>Got article: %s', item.title || item.description );
+				// 		console.log('>>link %s', item.link)
+				// 	}
+				// })
 				.on('end', function () {
-					console.log('end %s', feed)
+					// console.log('end ===== %s =====', feed)
 				});
-		}
-		this.javatest();
-	
+		}	
 	},
-	// getContent : function (link){
-	// 	var boilerpipe = new Boilerpipe({
-	// 		extractor: Boilerpipe.Extractor.Article,
-	// 		url: link
-	// 	});
-	// 	boilerpipe.getText(function(err, text) {
-	// 		return text;
-	// 	});
-	// 	console.log("AHHHHHHHHHHHHH")
-	// 	return null;
-	// },
+	getContent : function (article, feed){
+		var Boilerpipe = require('boilerpipe');
+		var boilerpipe = new Boilerpipe({
+			extractor: Boilerpipe.Extractor.ArticleSentences,
+			url: article.link
+		});
+		boilerpipe.getText(function(err, text) {
+
+
+			// console.log('--- %s ---', article.title);
+			// console.log('author: %s',article.author);
+			// console.log('date : %s', article.date);
+			// console.log('link: %s', article.link);
+			// console.log('content:', text || article.description);
+
+
+			var result = {
+				"title" : article.title,
+				"author" : article.author,
+				"date" : article.date,
+				"link" : article.link,
+				"text" : text || article.description
+			}
+			
+			fs.writeFile('feedresult_test.json', JSON.stringify(result), function (err) {
+				if (err) throw err;
+				console.log('end ===== %s =====\n===== %s =====', article.title, (new Date()).toString());
+			});
+		});
+	},
+	//=================================================================================//
+	//===== The Codes below this line is just test codes, it is not needed to run =====//
+	//=================================================================================//
+	boilerpipetest: function () {
+		var Boilerpipe = require('boilerpipe');
+		var boilerpipe = new Boilerpipe({
+			extractor: Boilerpipe.Extractor.ArticleSentences,
+			url: 'http://www.nytimes.com/2013/10/12/us/politics/budget-and-debt-limit-debate.html?hp'
+			// url: 'http://rss.cnn.com/~r/rss/cnn_topstories/~3/ZIKpKrf_-to/index.html'
+		});
+		boilerpipe.getText(function(err, text) {
+			console.log('text',text);
+		});
+	},
 	javatest : function (){
 		var java = require("java");
 		java.classpath.push("commons-lang3-3.1.jar");
