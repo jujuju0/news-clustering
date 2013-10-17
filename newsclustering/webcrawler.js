@@ -2,9 +2,9 @@
 	author : Miae Kim ( http://facebook.com/sweet.miae.kim )
 */
 
-var fs = require("fs");
 module.exports = {
 	getfile : function(filepath){
+		var fs = require("fs");
 		var _file = fs.readFileSync(filepath,'utf8');
 		return _file;
 	},
@@ -23,7 +23,8 @@ module.exports = {
 		for( i in feedlist) {
 			var feed = feedlist[i];
 			var data;
-			request(feed)
+			var articlecnt = 0;
+			request.get(feed)
 				.on('error', function (error) {
 					console.error(error);
 				})
@@ -35,6 +36,8 @@ module.exports = {
 					console.log('beg ===== %s =====', meta.title);
 				})
 				.on('article', function (article) {
+					articlecnt++;
+					if( articlecnt > 10 ) return;
 					self.getContent(article, feed);
 				})
 				// .on('readable', function () {
@@ -45,27 +48,19 @@ module.exports = {
 				// 		console.log('>>link %s', item.link)
 				// 	}
 				// })
-				.on('end', function () {
-					// console.log('end ===== %s =====', feed)
-				});
+				// .on('end', function () {
+				// 	console.log('end ===== %s =====', feed)
+				// });
 		}	
 	},
-	getContent : function (article, feed){
+	getContent : function (article, feed) {
+		var fs = require("fs");
 		var Boilerpipe = require('boilerpipe');
 		var boilerpipe = new Boilerpipe({
 			extractor: Boilerpipe.Extractor.ArticleSentences,
 			url: article.link
 		});
 		boilerpipe.getText(function(err, text) {
-
-
-			// console.log('--- %s ---', article.title);
-			// console.log('author: %s',article.author);
-			// console.log('date : %s', article.date);
-			// console.log('link: %s', article.link);
-			// console.log('content:', text || article.description);
-
-
 			var result = {
 				"title" : article.title,
 				"author" : article.author,
@@ -73,16 +68,16 @@ module.exports = {
 				"link" : article.link,
 				"text" : text || article.description
 			}
-			
-			fs.writeFile('feedresult_test.json', JSON.stringify(result), function (err) {
+
+			fs.appendFile('feedresult_test.json', JSON.stringify(result), function (err) {
 				if (err) throw err;
 				console.log('end ===== %s =====\n===== %s =====', article.title, (new Date()).toString());
 			});
 		});
 	},
-	//=================================================================================//
-	//===== The Codes below this line is just test codes, it is not needed to run =====//
-	//=================================================================================//
+	//==================================================================================//
+	//===== The Codes below this line are just test codes, it is not needed to run =====//
+	//==================================================================================//
 	boilerpipetest: function () {
 		var Boilerpipe = require('boilerpipe');
 		var boilerpipe = new Boilerpipe({
@@ -93,6 +88,14 @@ module.exports = {
 		boilerpipe.getText(function(err, text) {
 			console.log('text',text);
 		});
+	},
+	sentimentTest: function (argument) {
+		var sentiment = require('sentiment');
+
+		sentiment('Cats are stupid.', function (err, result) {
+			console.dir(result);    // Score: -2, Comparative: -0.666
+		});
+
 	},
 	javatest : function (){
 		var java = require("java");
