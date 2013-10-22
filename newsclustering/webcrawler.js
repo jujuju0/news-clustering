@@ -20,6 +20,15 @@ module.exports = {
 			return;
 		}
 
+		// BEFORE
+		//Feedlist
+		//	feed
+
+		// AFTER
+		//Object
+		//	Media
+		//		feed
+
 		for( i in feedlist) {
 			var feed = feedlist[i];
 			var data;
@@ -66,9 +75,12 @@ module.exports = {
 				"author" : article.author,
 				"date" : article.date,
 				"link" : article.link,
+				"media" : "",
 				"text" : text || article.description
+				// "polarity" : integer
 			}
 
+			// FILE -> MONGO
 			fs.appendFile('feedresult_test.json', JSON.stringify(result), function (err) {
 				if (err) throw err;
 				console.log('end ===== %s =====\n===== %s =====', article.title, (new Date()).toString());
@@ -96,6 +108,9 @@ module.exports = {
 			console.dir(result);    // Score: -2, Comparative: -0.666
 		});
 
+	},
+	mongoTest : function (argument) {
+		// body...
 	},
 	javatest : function (){
 		var java = require("java");
