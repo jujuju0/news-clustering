@@ -109,10 +109,57 @@ module.exports = {
 		});
 
 	},
-	mongoTest : function (argument) {
-		// body...
+	TFIDFTest : function() {
+
 	},
-	javatest : function (){
+	mongoTest : function (argument) {
+		// var mongoClient = require('mongodb').mongoClient;
+		// var url = 'mongodb://localhost'
+		// var mongo = require('mongodb');
+
+		// var db = new mongo.Db('test', new mongo.Server('localhost',22892, {}), {});
+
+		// db.open(function(){});
+
+		// db.collection('docs', function(err,collection){
+  // 	  		doc = {"foo":"bar"};
+  //  		 	collection.insert(doc, function(){});
+		// });
+		var mongoose = require('mongoose');
+		var db = mongoose.connection;
+
+		var kittySchema = mongoose.Schema({
+				"name" : String,
+				"title" : String,
+				"author" : String,
+				"date" : String,
+				"link" : String,
+				"media" : String,
+				"text" : String
+		});
+		// var Kitten = mongoose.model('Kitten', kittySchema)
+		// var silence = new Kitten({ name: 'Silence' })
+
+		kittySchema.methods.speak = function () {
+			var greeting = this.name
+			? "Meow name is " + this.name
+			: "I don't have a name"
+			console.log(greeting);
+		}
+		var Kitten = mongoose.model('Kitten', kittySchema)
+		var fluffy = new Kitten({ name: 'fluffy' });
+		fluffy.speak();
+		fluffy.save(function (err, fluffy) {
+			if (err) // TODO handle the error
+			fluffy.speak();
+		});
+		Kitten.find(function (err, kittens) {
+			if (err) // TODO handle err
+			console.log(kittens)
+		});
+		mongoose.connect('mongodb://localhost/my_database');
+	},
+	javaTest : function (){
 		var java = require("java");
 		java.classpath.push("commons-lang3-3.1.jar");
 		java.classpath.push("commons-io.jar");

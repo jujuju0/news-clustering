@@ -34,8 +34,8 @@ app.get('/', routes.index);
 app.get('/users', user.list);
 app.get('/getfile', routes.getfile);
 
-setInterval(webcrawler.getRSS() , 86400000);
-// webcrawler.sentimentTest();
+// setInterval(webcrawler.getRSS() , 86400000);
+webcrawler.mongoTest();
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
