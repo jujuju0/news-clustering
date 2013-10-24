@@ -2,6 +2,31 @@
 	author : Miae Kim ( http://facebook.com/sweet.miae.kim )
 */
 
+var mongoose = require('mongoose');
+var db = mongoose.connection;
+var mySchema = mongoose.Schema({
+	name		: String,
+	title		: { type: String, index: true },
+	author		: String,
+	date		: Date, //{ type: Date, default: Date.now },
+	link		: String,
+	media		: String,
+
+	text		: String,
+	keywords	: [String],
+	score		: Number,
+	polarity	: Number,
+
+	gottext		: { type: Boolean, default: false },
+	gotpol		: { type: Boolean, default: false },
+	gotkey		: { type: Boolean, default: false },
+	gotScore	: { type: Boolean, default: false }
+});
+
+var DBname = "articles";
+var Model = mongoose.model('result', mySchema);
+mongoose.connect('localhost', DBname);
+
 module.exports = {
 	getfile : function(filepath){
 		var fs = require("fs");
@@ -13,56 +38,49 @@ module.exports = {
 		var FeedParser = require('feedparser');
 		var request = require('request');
 		var RSSFEEDPATH = "./rssfeedlist.json";
-		var feedlist = eval(this.getfile(RSSFEEDPATH));
+		var medialist = JSON.parse(this.getfile(RSSFEEDPATH));
 
-		if( !Array.isArray(feedlist)) {
-			console.log('THIS IS NOT FEED ERROR')
-			return;
+		for(var media in medialist){
+			var feedlist = medialist[media];
+			for(var j in feedlist){
+				var feed = feedlist[j];
+				var articlecnt = 0;
+				request.get(feed)
+					.on('error', function (error) {
+						console.log("GET//%s : %s", media, feed);
+						console.error(error);
+					})
+					.pipe(new FeedParser())
+					.on('error', function (error) {
+						console.error(error);
+						console.log("PIPE//%s : %s", media, feed);
+					})
+					.on('meta', function (meta) {
+						console.log('beg ===== %s =====', meta.title);
+					})
+					.on('article', function (article) {
+						if( ++articlecnt > 10 ) return;
+						article.media = media;
+						var Article = new Model({ "title" : article.title, "author" : article.author, "date" : article.date, "link" : article.link, "media" : article.media, "text" : article.description });
+						Article.save(function (err){
+							if(err) console.err('dberr')
+						});
+					})
+					// .on('readable', function () {
+					// 	var stream = this, item;
+					// 	while (item = stream.read()) {
+					// 		console.log('>>article', item)
+					// 		console.log('>>Got article: %s', item.title || item.description );
+					// 		console.log('>>link %s', item.link)
+					// 	}
+					// })
+					.on('end', function () {
+						console.log('end ===== %s =====', feed)
+					});
+			}
 		}
-
-		// BEFORE
-		//Feedlist
-		//	feed
-
-		// AFTER
-		//Object
-		//	Media
-		//		feed
-
-		for( i in feedlist) {
-			var feed = feedlist[i];
-			var data;
-			var articlecnt = 0;
-			request.get(feed)
-				.on('error', function (error) {
-					console.error(error);
-				})
-				.pipe(new FeedParser())
-				.on('error', function (error) {
-					console.error(error);
-				})
-				.on('meta', function (meta) {
-					console.log('beg ===== %s =====', meta.title);
-				})
-				.on('article', function (article) {
-					articlecnt++;
-					if( articlecnt > 10 ) return;
-					self.getContent(article, feed);
-				})
-				// .on('readable', function () {
-				// 	var stream = this, item;
-				// 	while (item = stream.read()) {
-				// 		console.log('>>article', item)
-				// 		console.log('>>Got article: %s', item.title || item.description );
-				// 		console.log('>>link %s', item.link)
-				// 	}
-				// })
-				// .on('end', function () {
-				// 	console.log('end ===== %s =====', feed)
-				// });
-		}	
 	},
-	getContent : function (article, feed) {
+	getContent : function (article) {
 		var fs = require("fs");
 		var Boilerpipe = require('boilerpipe');
 		var boilerpipe = new Boilerpipe({
@@ -75,17 +93,27 @@ module.exports = {
 				"author" : article.author,
 				"date" : article.date,
 				"link" : article.link,
-				"media" : "",
+				"media" : article.media,
 				"text" : text || article.description
-				// "polarity" : integer
 			}
 
+			var resultDB = new mySchema(result);
+			resultDB.save(function (err) {
+				if(err) console.err('dberr')
+			})
 			// FILE -> MONGO
-			fs.appendFile('feedresult_test.json', JSON.stringify(result), function (err) {
-				if (err) throw err;
-				console.log('end ===== %s =====\n===== %s =====', article.title, (new Date()).toString());
-			});
+			// fs.appendFile('feedresult_test.json', JSON.stringify(result), function (err) {
+			// 	if (err) throw err;
+			// 	console.log('end ===== %s =====\n===== %s =====', article.title, (new Date()).toString());
+			// });
+
 		});
+	},
+	getPolarity : function (argument) {
+		// body...
+	},
+	getKeywords : function (argument) {
+		// body...
 	},
 	//==================================================================================//
 	//===== The Codes below this line are just test codes, it is not needed to run =====//
@@ -113,18 +141,7 @@ module.exports = {
 
 	},
 	mongoTest : function (argument) {
-		// var mongoClient = require('mongodb').mongoClient;
-		// var url = 'mongodb://localhost'
-		// var mongo = require('mongodb');
-
-		// var db = new mongo.Db('test', new mongo.Server('localhost',22892, {}), {});
-
-		// db.open(function(){});
-
-		// db.collection('docs', function(err,collection){
-  // 	  		doc = {"foo":"bar"};
-  //  		 	collection.insert(doc, function(){});
-		// });
+		
 		var mongoose = require('mongoose');
 		var db = mongoose.connection;
 
@@ -146,8 +163,9 @@ module.exports = {
 			: "I don't have a name"
 			console.log(greeting);
 		}
-		var Kitten = mongoose.model('Kitten', kittySchema)
+		var Kitten = mongoose.model('Kitten', kittySchema);
 		var fluffy = new Kitten({ name: 'fluffy' });
+		console.log("fluffy에 저장된 내용:"+ fluffy.name);
 		fluffy.speak();
 		fluffy.save(function (err, fluffy) {
 			if (err) // TODO handle the error
@@ -158,21 +176,5 @@ module.exports = {
 			console.log(kittens)
 		});
 		mongoose.connect('mongodb://localhost/my_database');
-	},
-	javaTest : function (){
-		var java = require("java");
-		java.classpath.push("commons-lang3-3.1.jar");
-		java.classpath.push("commons-io.jar");
-
-		var list = java.newInstanceSync("java.util.ArrayList");
-
-		java.newInstance("java.util.ArrayList", function(err, list) {
-		  list.addSync("item1");
-		  list.addSync("item2");
-		});
-
-		var ArrayList = java.import('java.util.ArrayList');
-		var list = new ArrayList();
-		list.addSync('item1');
 	}
 }
