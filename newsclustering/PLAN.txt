@@ -1,0 +1,61 @@
+<< STRUCTURE >>
+
+RSS
+SAVE
+FIND
+TEXT
+POLARITY
+KEYWORDS
+SAVE
+
+<< PALN >>
+
+1. COMPARE DATE -> COLLECT ARTICLES ONLY WRITTEN TODAY.
+2. COLLECT ARTICLE CONTENTS.
+3. GET POLARITY, KEYWORDS
+4. CHECK IF THE ARTICLE CAN BE FOUND( FIND() ) BY KEYWORDS.
+	HOW TO
+		1.GETRSS -> BRING KEYWORDS -> GETSTRING
+		FIND KEYWORDS IN QUERY
+
+
+
+
+1, 4 JUYOUNG
+2, 3 MIAE
+
+
+
+
+
+/////////// THESE MEDIAS DON'T WORK NOW. ///////////////////////
+
+    "BBC" : [
+        "http://feeds.bbci.co.uk/news/rss.xml",
+        "http://feeds.bbci.co.uk/news/world/rss.xml",
+        "http://feeds.bbci.co.uk/news/uk/rss.xml",
+        "http://feeds.bbci.co.uk/news/business/rss.xml",
+        "http://feeds.bbci.co.uk/news/politics/rss.xml",
+        "http://feeds.bbci.co.uk/news/health/rss.xml",
+        "http://feeds.bbci.co.uk/news/education/rss.xml",
+        "http://feeds.bbci.co.uk/news/science_and_environment/rss.xml",
+        "http://feeds.bbci.co.uk/news/technology/rss.xml",
+        "http://feeds.bbci.co.uk/news/entertainment_and_arts/rss.xml"
+    ]
+    ,
+    "CBS News" : [
+        "http://www.cbsnews.com/feeds/rss/main.rss",
+        "http://www.cbsnews.com/feeds/rss/national.rss",
+        "http://www.cbsnews.com/feeds/rss/world.rss",
+        "http://www.cbsnews.com/rss/tech_talk.rss",
+        "http://www.cbsnews.com/rss/horserace.rss",
+        "http://www.cbsnews.com/feeds/rss/politics.rss",
+        "http://www.cbsnews.com/feeds/rss/scitech.rss",
+        "http://www.cbsnews.com/feeds/rss/health.rss",
+        "http://www.cbsnews.com/feeds/rss/entertainment.rss",
+        "http://www.cbsnews.com/feeds/rss/business.rss",
+        "http://www.cbsnews.com/feeds/rss/cbsnews_investigates.rss",
+        "http://www.cbsnews.com/feeds/rss/opinion.rss",
+        "http://www.cbsnews.com/feeds/rss/travel.rss"
+    ]
+
