@@ -2,12 +2,13 @@
 
 RSS
 SAVE
+////////// webrawler.js [ 1, 4 ]
 FIND
 TEXT
 POLARITY
 KEYWORDS
 SAVE
-
+///////// [ 2, 3 ]
 << PALN >>
 
 1. COMPARE DATE -> COLLECT ARTICLES ONLY WRITTEN TODAY.
