@@ -13,7 +13,12 @@ module.exports = {
 			var feedlist = medialist[media];
 			for(var j in feedlist){
 				var feed = feedlist[j];
-				var articlecnt = 0;
+				var curDate = new Date();
+				var today = 0;
+
+				curDate = curDate.toString();
+				today = curDate.substring(0, 15);
+
 				request.get(feed)
 					.on('error', function (error) {
 						console.log("GET//%s : %s", media, feed);
@@ -28,8 +33,15 @@ module.exports = {
 						console.log('beg ===== %s =====', meta.title);
 					})
 					.on('article', function (article) {
-						if( ++articlecnt > 10 ) return;
+						var aDate = article.date;
+						var articleDate = 0;
+
+						aDate = aDate.toString();
+						articleDate = aDate.substring(0, 15);
+						
+						if( today != articleDate) return;
 						article.media = media;
+
 						var Article = new Model({ "title" : article.title, "author" : article.author, "date" : article.date, "link" : article.link, "media" : article.media, "text" : article.description });
 						Article.save(function (err){
 							if(err) console.err('dberr')
