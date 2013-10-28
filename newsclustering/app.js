@@ -11,6 +11,34 @@ var path = require('path');
 
 var app = express();
 var webcrawler = require('./webcrawler.js');
+
+// mongo
+
+mongoose = require('mongoose');
+var db = mongoose.connection;
+mySchema = mongoose.Schema({
+	name		: String,
+	title		: { type: String, index: true },
+	author		: String,
+	date		: Date, //{ type: Date, default: Date.now },
+	link		: String,
+	media		: String,
+
+	text		: String,
+	keywords	: [String],
+	score		: Number,
+	polarity	: Number,
+
+	gottext		: { type: Boolean, default: false },
+	gotpol		: { type: Boolean, default: false },
+	gotkey		: { type: Boolean, default: false },
+	gotScore	: { type: Boolean, default: false }
+});
+
+var DBpath = "mongodb://localhost:27017/articles";
+Model = mongoose.model('result', mySchema);
+mongoose.connect(DBpath);
+
 // all environments
 app.set('port', process.env.PORT || 3000);
 app.set('views', __dirname + '/views');
@@ -33,7 +61,7 @@ if ('development' == app.get('env')) {
 app.get('/', routes.index);
 app.get('/users', user.list);
 app.get('/getfile', routes.getfile);
-
+app.get('/getdata', routes.getdata)
 // setInterval(webcrawler.getRSS() , 86400000);
 webcrawler.getRSS();
 
