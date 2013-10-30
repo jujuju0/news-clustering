@@ -42,9 +42,11 @@ module.exports = {
 						if( today != articleDate) return;
 						article.media = media;
 
-						var Article = new Model({ "title" : article.title, "author" : article.author, "date" : article.date, "link" : article.link, "media" : article.media, "text" : article.description });
-						Article.save(function (err){
-							if(err) console.err('dberr')
+						self.getContent(article, function (result) {
+							var Article = new Model(result);
+							Article.save(function (err){
+								if(err) console.err('dberr')
+							});
 						});
 					})
 					// .on('readable', function () {
@@ -61,37 +63,57 @@ module.exports = {
 			}
 		}
 	},
-	getContent : function (article) {
+	getContent : function (article, callback) {
 		var fs = require("fs");
-		var Boilerpipe = require('boilerpipe');
-		var boilerpipe = new Boilerpipe({
-			extractor: Boilerpipe.Extractor.ArticleSentences,
-			url: article.link
-		});
-		boilerpipe.getText(function(err, text) {
-			var result = {
-				"title" : article.title,
-				"author" : article.author,
-				"date" : article.date,
-				"link" : article.link,
-				"media" : article.media,
-				"text" : text || article.description
-			}
 
-			var resultDB = new mySchema(result);
-			resultDB.save(function (err) {
-				if(err) console.err('dberr')
-			})
-			// FILE -> MONGO
-			// fs.appendFile('feedresult_test.json', JSON.stringify(result), function (err) {
-			// 	if (err) throw err;
-			// 	console.log('end ===== %s =====\n===== %s =====', article.title, (new Date()).toString());
-			// });
 
+		var java = require("java");
+		java.classpath.push("commons-lang3-3.1.jar");
+		java.classpath.push("commons-io.jar");
+
+		var list = java.newInstanceSync("java.util.ArrayList");
+
+		java.newInstance("java.util.ArrayList", function(err, list) {
+		  list.addSync("item1");
+		  list.addSync("item2");
 		});
+
+		var ArrayList = java.import('java.util.ArrayList');
+		var list = new ArrayList();
+		list.addSync('item1');
+
+
+		// var Boilerpipe = require('boilerpipe');
+		// var boilerpipe = new Boilerpipe({
+		// 	extractor: Boilerpipe.Extractor.ArticleSentences,
+		// 	url: article.link
+		// });
+		return article.description;
+		// boilerpipe.getText(function(err, text) {
+		// 	var result = {
+		// 		"title" : article.title,
+		// 		"author" : article.author,
+		// 		"date" : article.date,
+		// 		"link" : article.link,
+		// 		"media" : article.media,
+		// 		"text" : text || article.description
+		// 	}
+
+		// 	// var resultDB = new Model(result);
+		// 	// resultDB.save(function (err) {
+		// 	// 	if(err) console.err('dberr')
+		// 	// });
+
+		// 	return result;
+
+		// });
 	},
 	getPolarity : function (argument) {
-		// body...
+		var sentiment = require('sentiment');
+
+		sentiment('Cats are stupid.', function (err, result) {
+			console.dir(result);    // Score: -2, Comparative: -0.666
+		});
 	},
 	getKeywords : function (argument) {
 		// body...
