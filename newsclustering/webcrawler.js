@@ -41,13 +41,15 @@ module.exports = {
 						
 						if( today != articleDate) return;
 						article.media = media;
-
-						self.getContent(article, function (result) {
-							var Article = new Model(result);
-							Article.save(function (err){
-								if(err) console.err('dberr')
-							});
-						});
+						
+						// self.getContent(article, function (result) {
+						// 	console.log(result.title);
+						// 	// var Article = new Model(result);
+						// 	// Article.save(function (err){
+						// 	// 	if(err) console.err('dberr')
+						// 	// });
+						// });
+						
 					})
 					// .on('readable', function () {
 					// 	var stream = this, item;
@@ -64,49 +66,29 @@ module.exports = {
 		}
 	},
 	getContent : function (article, callback) {
-		var fs = require("fs");
-
-
-		var java = require("java");
-		java.classpath.push("commons-lang3-3.1.jar");
-		java.classpath.push("commons-io.jar");
-
-		var list = java.newInstanceSync("java.util.ArrayList");
-
-		java.newInstance("java.util.ArrayList", function(err, list) {
-		  list.addSync("item1");
-		  list.addSync("item2");
+		var Boilerpipe = require('boilerpipe');
+		var boilerpipe = new Boilerpipe({
+			extractor: Boilerpipe.Extractor.ArticleSentences,
+			url: article.link
 		});
+		boilerpipe.getText(function(err, text) {
+			var result = {
+				"title" : article.title,
+				"author" : article.author,
+				"date" : article.date,
+				"link" : article.link,
+				"media" : article.media,
+				"text" : text || article.description
+			}
 
-		var ArrayList = java.import('java.util.ArrayList');
-		var list = new ArrayList();
-		list.addSync('item1');
+			// var resultDB = new Model(result);
+			// resultDB.save(function (err) {
+			// 	if(err) console.err('dberr')
+			// });
 
+			return result;
 
-		// var Boilerpipe = require('boilerpipe');
-		// var boilerpipe = new Boilerpipe({
-		// 	extractor: Boilerpipe.Extractor.ArticleSentences,
-		// 	url: article.link
-		// });
-		return article.description;
-		// boilerpipe.getText(function(err, text) {
-		// 	var result = {
-		// 		"title" : article.title,
-		// 		"author" : article.author,
-		// 		"date" : article.date,
-		// 		"link" : article.link,
-		// 		"media" : article.media,
-		// 		"text" : text || article.description
-		// 	}
-
-		// 	// var resultDB = new Model(result);
-		// 	// resultDB.save(function (err) {
-		// 	// 	if(err) console.err('dberr')
-		// 	// });
-
-		// 	return result;
-
-		// });
+		});
 	},
 	getPolarity : function (argument) {
 		var sentiment = require('sentiment');

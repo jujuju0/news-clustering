@@ -5,7 +5,6 @@
 
 
 var crawler = require("../webcrawler.js")
-var meta = require("../metadata.js")
 
 exports.index = function(req, res){
   res.render('index', { title: 'LOVELOVE_NEWSCLUSTERING_SYSTEM' });
