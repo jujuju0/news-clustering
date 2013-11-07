@@ -29,3 +29,4 @@ exports.getdata = function (req, res) {
 	*/
 }
 
+// REUGULAR EXPRESSION CLASS 

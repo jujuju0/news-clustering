@@ -35,21 +35,30 @@ module.exports = {
 					.on('article', function (article) {
 						var aDate = article.date;
 						var articleDate = 0;
-
 						aDate = aDate.toString();
 						articleDate = aDate.substring(0, 15);
-						
-						if( today != articleDate) return;
-						article.media = media;
-						
-						// self.getContent(article, function (result) {
-						// 	console.log(result.title);
-						// 	// var Article = new Model(result);
-						// 	// Article.save(function (err){
-						// 	// 	if(err) console.err('dberr')
-						// 	// });
-						// });
-						
+						if( today == articleDate) {
+
+							article.media = ((article.link).match(/\.+[A-Za-z_]+\./g)[0]).replace(/\./g, "");
+							var Boilerpipe = require('boilerpipe');
+							var boilerpipe = new Boilerpipe({
+								extractor: Boilerpipe.Extractor.ArticleSentences,
+								url: article.link
+							});
+							boilerpipe.getText(function(err, text) {
+								article.text = text || article.description;
+								var sentiment = require('sentiment');
+
+								sentiment( article.text+" " , function (err, result) {
+									console.log('today : %s , title : %s polarity : %lf', aDate, article.title, result.score)
+									article.polarity = result.score;   // Score: -2, Comparative: -0.666
+									var resultDB = new Model(article);
+									resultDB.save(function (err) {
+										if(err) console.err('dberr')
+									});
+								});
+							});
+						}
 					})
 					// .on('readable', function () {
 					// 	var stream = this, item;
@@ -65,39 +74,45 @@ module.exports = {
 			}
 		}
 	},
-	getContent : function (article, callback) {
-		var Boilerpipe = require('boilerpipe');
-		var boilerpipe = new Boilerpipe({
-			extractor: Boilerpipe.Extractor.ArticleSentences,
-			url: article.link
-		});
-		boilerpipe.getText(function(err, text) {
-			var result = {
-				"title" : article.title,
-				"author" : article.author,
-				"date" : article.date,
-				"link" : article.link,
-				"media" : article.media,
-				"text" : text || article.description
-			}
+	// getContent : function (article, callback) {
+	// 	// var conditions = { "gottext" : false }
+	// 	// , update = {}
+	// 	// , options = {};
+	// 	// Model.update( conditions, update, options, function ( err, article ) {
+	// 	// }
+	// 	var Boilerpipe = require('boilerpipe');
+	// 	var boilerpipe = new Boilerpipe({
+	// 		extractor: Boilerpipe.Extractor.ArticleSentences,
+	// 		url: article.link
+	// 	});
+	// 	boilerpipe.getText(function(err, text) {
+                
+	// 		var result = {
+	// 			"title" : article.title,
+	// 			"author" : article.author,
+	// 			"date" : article.date,
+	// 			"link" : article.link,
+	// 			"media" : article.media,
+	// 			"text" : text || article.description
+	// 		}
+                
+	// 		// var resultDB = new Model(result);
+	// 		// resultDB.save(function (err) {
+	// 		// 	if(err) console.err('dberr')
+	// 		// });
+                
+	// 		//return result;
+                
+	// 	});
+	// },
+	// getPolarity : function (argument) {
+	// 	var sentiment = require('sentiment');
 
-			// var resultDB = new Model(result);
-			// resultDB.save(function (err) {
-			// 	if(err) console.err('dberr')
-			// });
-
-			return result;
-
-		});
-	},
-	getPolarity : function (argument) {
-		var sentiment = require('sentiment');
-
-		sentiment('Cats are stupid.', function (err, result) {
-			console.dir(result);    // Score: -2, Comparative: -0.666
-		});
-	},
-	getKeywords : function (argument) {
-		// body...
-	}
+	// 	sentiment('Cats are stupid.', function (err, result) {
+	// 		console.dir(result);    // Score: -2, Comparative: -0.666
+	// 	});
+	// },
+	// getKeywords : function (argument) {
+	// 	// body...
+	// }
 }

@@ -11,13 +11,13 @@ SAVE
 ///////// [ 2, 3 ]
 << PALN >>
 
-1. COMPARE DATE -> COLLECT ARTICLES ONLY WRITTEN TODAY.
+1. COMPARE DATE -> COLLECT ARTICLES ONLY WRITTEN TODAY. //DID IT!
 2. COLLECT ARTICLE CONTENTS.
 3. GET POLARITY, KEYWORDS
 4. CHECK IF THE ARTICLE CAN BE FOUND( FIND() ) BY KEYWORDS.
 	HOW TO
-		1.GETRSS -> BRING KEYWORDS -> GETSTRING
 		FIND KEYWORDS IN QUERY
+        if(There is keyword in title || text) search articles including keyword in title or text
 
 
 
@@ -27,7 +27,7 @@ SAVE
 
 
 
-
+\.+[a-z]+\.com
 
 /////////// THESE MEDIAS DON'T WORK NOW. ///////////////////////
 
