@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="">
+        <meta name="author" content="">
+        <link rel="shortcut icon" href="../../assets/ico/favicon.png">
+        <script src="js/jquery-2.0.3.min.js"></script>
+        <script src="js/jquery-ui-1.10.3.custom.js"></script>
+        <script src="js/rainbowvis.js"></script>
+        <!-- Bootstrap core CSS -->
+        <link href="css/bootstrap.css" rel="stylesheet">
+        <!-- Custom styles for this template -->
+        <link href="jumbotron.css" rel="stylesheet">
+        <link href="css/jquery-ui-1.10.3.custom.css" rel="stylesheet">
+        
+        <title>Newsitude</title>
+        
+        <script> 
+            $(document).ready(function(){
+                /////////////////////////////////////////////////
+                // Create gradients (rainbowvis.js)
+                /////////////////////////////////////////////////
+                var rainbow_neg = new Rainbow();
+                rainbow_neg.setSpectrum("#cd0200","#446e9b");
+                rainbow_neg.setNumberRange(-100, 0);
+                var rainbow_pos = new Rainbow();
+                rainbow_pos.setSpectrum("#446e9b","#009900");
+                rainbow_pos.setNumberRange(0, 100);
+                /////////////////////////////////////////////////
+                
+                
+                /////////////////////////////////////////////////
+                // Create progress bars for demo header
+                /////////////////////////////////////////////////
+                // Negative bar
+                var polarity = -70;
+                var polarity_width = 50 + (polarity / 2);
+                var polarity_width_string = polarity_width.toString().concat("%");
+                var rainbow_neg_hex = "#" + rainbow_neg.colourAt(polarity);
+                $("#progress_demo_neg").addClass("progress-bar");
+                $("#progress_demo_neg").css("background-color",rainbow_neg_hex);
+                $("#progress_demo_neg").css("width",polarity_width_string);
+                $("#progress_demo_neg").text(polarity);
+                
+                // Neutral bar
+                polarity = 0;
+                polarity_width = 50 + (polarity / 2);
+                polarity_width_string = polarity_width.toString().concat("%");
+                rainbow_neg_hex = "#" + rainbow_neg.colourAt(polarity);
+                $("#progress_demo_neutral").addClass("progress-bar");
+                $("#progress_demo_neutral").css("background-color",rainbow_neg_hex);
+                $("#progress_demo_neutral").css("width",polarity_width_string);
+                $("#progress_demo_neutral").text(polarity);
+                
+                // Positive bar
+                polarity = 70;
+                polarity_width = 50 + (polarity / 2);
+                polarity_width_string = polarity_width.toString().concat("%");
+                rainbow_pos_hex = "#" + rainbow_pos.colourAt(polarity);
+                $("#progress_demo_pos").addClass("progress-bar");
+                $("#progress_demo_pos").css("background-color",rainbow_pos_hex);
+                $("#progress_demo_pos").css("width",polarity_width_string);
+                $("#progress_demo_pos").text(polarity);
+                /////////////////////////////////////////////////
+                
+                
+                /////////////////////////////////////////////////
+                // Create progress bars for articles
+                /////////////////////////////////////////////////
+                var polarity = -30;  // Test value
+                var polarity_width = 50 + (polarity / 2);
+                var polarity_width_string = polarity_width.toString().concat("%");
+                
+                if(polarity <= 0)
+                {
+                    var rainbow_neg_hex = "#" + rainbow_neg.colourAt(polarity);
+                    
+                    $("#progress0").addClass("progress-bar");
+                    $("#progress0").css("background-color",rainbow_neg_hex);
+                    $("#progress0").css("width",polarity_width_string);
+                    $("#progress0").text(polarity);
+                }
+                else
+                {
+                    var rainbow_pos_hex = "#" + rainbow_pos.colourAt(polarity);
+                    
+                    $("#progress0").addClass("progress-bar");
+                    $("#progress0").css("background-color",rainbow_pos_hex);
+                    $("#progress0").css("width",polarity_width_string);
+                    $("#progress0").text(polarity);
+                }
+                /////////////////////////////////////////////////
+                
+                
+                /////////////////////////////////////////////////
+                // Show/hide expanded article
+                /////////////////////////////////////////////////
+                $("#btn_ReadMore").click(function(){
+                    var buttonText = $(this).html();
+                    
+                    $("#expanded_news").slideToggle();
+                    
+                    if(buttonText.charAt(0) == "R")
+                        $(this).html("Collapse &uArr;");
+                    else if(buttonText.charAt(0) == "C")
+                        $(this).html("Read More &dArr;");
+                });
+                /////////////////////////////////////////////////
+            });
+        </script>
+    </head>
+
+    <body>
+        <div class="navbar navbar-inverse navbar-fixed-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href=#>Home</a>
+                </div>
+                <div class="navbar-collapse collapse">
+                    <form class="navbar-form navbar-right">
+                        <div class="form-group">
+                            <input type="text" placeholder="Search" class="form-control">
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="jumbotron">
+            <div class="container">
+                <div><p style="font-size:28px; margin-top:40px">Welcome to Newsitude</p></div>
+                <p style="font-size:14px">The bar below each headline tells you how positive or negative the tone of that article is.</p>
+                <div><p style="font-size:14px">Negative:</p></div>
+                <div class="progress">
+                    <div id="progress_demo_neg"></div>
+                </div>
+                <div><p style="font-size:14px">Neutral:</p></div>
+                <div class="progress">
+                    <div id="progress_demo_neutral"></div>
+                </div>
+                <div><p style="font-size:14px">Positive:</p></div>
+                <div class="progress">
+                    <div id="progress_demo_pos"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div id="heading">
+                        <a href=#><h2 style="color:#5f87b3">Heading</h2></a>
+                        <h5>News source - age</h5>
+                    </div>
+                    <div class="progress">
+                        <div id="progress0"></div>
+                    </div>
+                    <div>
+                        Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. 
+                    </div>
+                    <div id="expanded_news" style="display:none">
+                        Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. 
+                    </div>
+                    <button id="btn_ReadMore" class="btn btn-default" style="float:right">Read more &dArr;</button>
+                </div>
+            </div>
+
+            <hr>
+
+            <footer>
+                <p>by BeautifulMimiKim, JuJuJu, and Dong Min</p>
+            </footer>
+        </div>
+
+        <!-- Placed at the end of the document so the pages load faster -->
+        <script src="/js/bootstrap.min.js"></script>
+    
+    </body>
+</html>
